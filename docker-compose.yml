@@ -1,0 +1,32 @@
+version: '3.9'
+services:
+  oracle-db:
+    image: gvenzl/oracle-xe
+    container_name: oracle
+    environment:
+      ORACLE_PASSWORD: 291105
+    ports:
+      - "1521:1521"
+    volumes:
+      - oracle-data:/opt/oracle/oradata
+    networks:
+      - dimdimnet
+
+  web-api:
+    build: .
+    container_name: dimdim-api
+    environment:
+      - ConnectionStrings__DefaultConnection=Data Source=oracle:1521/XEPDB1;User Id=RM557528;Password=291105;
+    depends_on:
+      - oracle-db
+    ports:
+      - "5000:80"
+    networks:
+      - dimdimnet
+
+volumes:
+  oracle-data:
+
+networks:
+  dimdimnet:
+    driver: bridge
